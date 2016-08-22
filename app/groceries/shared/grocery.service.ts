@@ -13,52 +13,22 @@ export class GroceryService {
   constructor(private zone: NgZone, private backend: BackendService) { }
 
   load() {
-    if (!this.backend.el.offlineStorage.isSynchronizing()) {
-      return this.loadItems();
-    }
-
     return new Promise((resolve, reject) => {
-      this.backend.el.on("syncEnd", () => {
-        this.loadItems()
-          .then(() => { resolve(); })
-          .catch(() => { reject(); });
-      });
+      this.loadItems()
+        .then(() => { resolve(); })
+        .catch(() => { reject(); });
     });
   }
 
   private loadItems() {
-    return this.backend.el.data("Groceries")
-      .withHeaders({ "X-Everlive-Sort": JSON.stringify({ ModifiedAt: -1 }) })
-      .get()
-      .then((data) => {
-        data.result.forEach((grocery) => {
-          this.allItems.push(
-            new Grocery(
-              grocery.Id,
-              grocery.Name,
-              grocery.Done || false,
-              grocery.Deleted || false
-            )
-          );
-        });
-
-        this.publishUpdates();
-        return Promise.resolve(this.allItems);
-      })
-      .catch(this.handleErrors);
+    return Promise.resolve();
   }
 
   add(name: string) {
     let newGrocery = new Grocery("", name, false, false);
     this.allItems.unshift(newGrocery);
     this.publishUpdates();
-    return this.backend.el.data("Groceries")
-      .create({ Name: name })
-      .then((data) => {
-        newGrocery.id = data.result.Id;
-        return Promise.resolve(newGrocery);
-      })
-      .catch(this.handleErrors);
+    return Promise.resolve();
   }
 
   setDeleteFlag(item: Grocery) {
@@ -98,10 +68,7 @@ export class GroceryService {
     };
 
     this.publishUpdates();
-    return this.backend.el.data("Groceries")
-      .withHeaders(headers)
-      .update({ Deleted: false, Done: false })
-      .catch(this.handleErrors);
+    return Promise.resolve();
   }
 
   private updateSingleItem(item: Grocery, newItem: Grocery) {
@@ -110,9 +77,7 @@ export class GroceryService {
   }
 
   private syncItem(item: Grocery) {
-    return this.backend.el.data("Groceries")
-      .updateSingle({ Id: item.id, Name: item.name, Deleted: item.deleted, Done: item.done })
-      .catch(this.handleErrors);
+    return Promise.resolve();
   }
 
   private publishUpdates() {

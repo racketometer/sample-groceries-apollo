@@ -20,32 +20,22 @@ export class LoginService {
   }
 
   constructor(private backend: BackendService) {
-    if (this.token) {
-      this.backend.el.authentication.setAuthorization(this.token, "bearer");
-    }
   }
 
   register(user: User) {
-    return this.backend.el.Users.register(user.email, user.password)
-      .catch(this.handleErrors);
+    return Promise.resolve();
   }
 
   login(user: User) {
-    return this.backend.el.authentication.login(user.email, user.password).then((data) => {
-      this.token = data.result.access_token;
-      this.backend.el.authentication.setAuthorization(this.token, "bearer");
-      return Promise.resolve();
-    }).catch(this.handleErrors);
+    return Promise.resolve();
   }
 
   logoff() {
-    this.backend.el.authentication.clearAuthorization();
     this.token = "";
   }
 
   resetPassword(email) {
-    return this.backend.el.Users.resetPassword({ Username: email })
-      .catch(this.handleErrors);
+    return Promise.resolve();
   }
 
   handleErrors(error) {
