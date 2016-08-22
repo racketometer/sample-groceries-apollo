@@ -7,7 +7,7 @@ import { AppComponent } from "./app.component";
 import { setStatusBarColors, BackendService, LoginService } from "./shared";
 
 const client = new ApolloClient({
-  networkInterface: createNetworkInterface('http://localhost:8080'),
+  networkInterface: createNetworkInterface('http://localhost:8080/graphql'),
 })
 
 setStatusBarColors();

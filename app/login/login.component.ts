@@ -7,6 +7,8 @@ import { View } from "ui/core/view";
 import { prompt } from "ui/dialogs";
 import { Page } from "ui/page";
 import { TextField } from "ui/text-field";
+import { Angular2Apollo } from 'angular2-apollo';
+import gql from 'graphql-tag';
 
 import { alert, setHintColor, LoginService, User } from "../shared";
 
@@ -29,12 +31,31 @@ export class LoginComponent implements OnInit {
   @ViewChild("email") email: ElementRef;
   @ViewChild("password") password: ElementRef;
 
-  constructor(private router: Router,
+  constructor(
+    private angularApollo: Angular2Apollo,
+    private router: Router,
     private userService: LoginService,
-    private page: Page) {
+    private page: Page
+  ) {
     this.user = new User();
     this.user.email = "ngconf@telerik33.com";
     this.user.password = "password";
+
+    angularApollo.query({
+      query: gql`
+        query getUsers {
+          users {
+            age
+            joinedAt
+          }
+        }
+      `,
+    }).catch((e, c) => {
+      console.error("error", e, c);
+      return c;
+    }).then((s) => {
+      console.log("success", JSON.stringify(s));
+    });
   }
 
   ngOnInit() {
@@ -147,7 +168,7 @@ export class LoginComponent implements OnInit {
     initialContainer.animate({
       opacity: 0,
       duration: 500
-    }).then(function() {
+    }).then(function () {
       // After the animation completes, hide the initial container and
       // show the main container and logo. The main container and logo will
       // not immediately appear because their opacity is set to 0 in CSS.
